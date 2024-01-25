@@ -49,12 +49,19 @@ let archerHealth = document.querySelector(".archer-health-txt");
 let warriorHealth = document.querySelector(".warrior-health-txt");
 let dragonHealth = document.querySelector(".dragon-health-txt");
 let heroCont = document.querySelectorAll(".img-container");
+let dragonContainer = document.querySelector(".dragon-container");
+
+// Hardkoder navnene til heltene og dragen
+healerName.textContent = heroesArray[0].name;
+archerName.textContent = heroesArray[1].name;
+warriorName.textContent = heroesArray[2].name;
+dragonName.innerText = dragonObject.name;
 
 // Vi må ha eventlistener på heltene
 heroCont.forEach(function (ourHeroes) {
   ourHeroes.addEventListener("click", handleClick);
 });
-
+// Så må vi håndtere klikkene
 function handleClick(event) {
   // Er ute etter det andre class-name for heltene våre.
   // 0 = img-container og 1 = den unike vi er ute etter.
@@ -77,9 +84,33 @@ function livingHeroes(hero) {
 }
 function heroAttacsDragon(hero, damage) {
   dragonObject.currentHP -= damage;
+  dragonHealth.textContent = `${dragonObject.currentHP} / 2000 HP`;
   console.log(dragonObject.currentHP);
-  alert(`${hero} har gjort ${damage} på ${dragonObject.name}`);
+  if (dragonObject.currentHP > 0) {
+    alert(`${hero} har gjort ${damage} på ${dragonObject.name}`);
+    dragonAttacsHero();
+  } else {
+    alert("Dragen er død!");
+    dragonDies(hero);
+  }
 }
-function dragonAttacsHero() {}
+function dragonAttacsHero() {
+  // Dragen angriper én av de levende heltene, der alive == true.
+  let picVictim = Math.floor(
+    Math.random() * heroesArray.filter((alive) => alive.alive == true).length
+  );
+  heroesArray[picVictim].currentHP -= dragonObject.damage;
+
+  console.log(`Dragen angriper ${heroesArray[picVictim].name}`);
+}
 function aHeroDies() {}
-function dragonDies() {}
+function dragonDies(hero) {
+  dragonContainer.innerHTML = "";
+  alert(`${dragonObject.name} er død! ${hero} kom med det dødelige slaget!`);
+  heroCont.forEach(function (ourHeroes) {
+    ourHeroes.removeEventListener("click", handleClick);
+  });
+}
+function gameOver() {
+  alert(`GAME OVER! ${dragonObject.name} har vunnet!`);
+}
