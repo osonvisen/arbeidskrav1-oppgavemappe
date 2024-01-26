@@ -8,6 +8,11 @@ const healerName = document.querySelector("#healer-name-txt");
 const archerName = document.querySelector("#archer-name-txt");
 const warriorName = document.querySelector("#warrior-name-txt");
 const dragonName = document.querySelector("#dragon-name-txt");
+// Definerer elementene som skal trykkes på
+let heroCont = document.querySelectorAll(".img-container");
+const Henriette = document.querySelector(".healer");
+const Ariana = document.querySelector(".archer");
+const Wyona = document.querySelector(".warrior");
 // Så legger vi disse i arrayet sammen med
 // Heltene våre
 let heroesArray = [
@@ -20,6 +25,7 @@ let heroesArray = [
     alive: true,
     health: healerHealth,
     bar: healerName,
+    img: Henriette,
   },
   {
     id: 1,
@@ -30,6 +36,7 @@ let heroesArray = [
     alive: true,
     health: archerHealth,
     bar: archerName,
+    img: Ariana,
   },
   {
     id: 2,
@@ -40,6 +47,7 @@ let heroesArray = [
     alive: true,
     health: warriorHealth,
     bar: warriorName,
+    img: Wyona,
   },
 ];
 // Dragen er et objekt
@@ -52,11 +60,6 @@ let dragonObject = {
   health: dragonHealth,
   bar: dragonName,
 };
-// Definerer elementene som skal trykkes på
-let heroCont = document.querySelectorAll(".img-container");
-const Henriette = document.querySelector(".healer");
-const Ariana = document.querySelector(".archer");
-const Wyona = document.querySelector(".warrior");
 
 // Legger navnene opp i baren
 heroesArray.forEach((hero) => {
@@ -96,7 +99,6 @@ function heroAttacsDragon(heroID) {
     `${heroesArray[heroID].name} angrep ${dragonObject.name} og påførte den ${heroesArray[heroID].damage} skade!`
   );
   if (dragonObject.currentHP > 0) {
-    console.log("Dragen lever fortsatt og angriper");
     dragonAttacsHero();
   } else {
     dragonDies();
@@ -120,4 +122,25 @@ function dragonAttacsHero() {
   alert(
     `${dragonObject.name} angriper ${heroesArray[heroUnikeID].name} og påfører ${dragonObject.damage} skade!`
   );
+  // Sjekker om helten fortsatt er i live
+  if (heroesArray[heroUnikeID].currentHP > 0) {
+    console.log("Vår helt er fortsatt i live!");
+  } else {
+    aHeroDies(heroUnikeID);
+  }
 }
+function aHeroDies(deadHero) {
+  // Skriver ut den triste beskjeden om at en helt har falt
+  alert(`${heroesArray[deadHero].name} har falt mot ${dragonObject.name}`);
+  // Endrer alive til false og fjerner bildet
+  heroesArray[deadHero].alive = false;
+  heroesArray[deadHero].img.innerHTML = "";
+  console.log("En helt er død!");
+  // Vi sjekker hvem helter som er i live
+  let livingHeroes = heroesArray.filter((hero) => hero.alive == true);
+  console.log(livingHeroes.length);
+  if (livingHeroes.length == 0) {
+    gameOver();
+  }
+}
+function gameOver() {}
