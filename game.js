@@ -1,0 +1,123 @@
+// Jeg velger å ha en egen js-fil. Føler jeg har bedre oversikt da, også kan jeg jobbe med kodene side ved side.
+// Først definerer vi alle enhetene vi skal jobbe med:
+let healerHealth = document.querySelector("#healer-health-txt");
+let archerHealth = document.querySelector("#archer-health-txt");
+let warriorHealth = document.querySelector("#warrior-health-txt");
+let dragonHealth = document.querySelector(".dragon-health-txt");
+const healerName = document.querySelector("#healer-name-txt");
+const archerName = document.querySelector("#archer-name-txt");
+const warriorName = document.querySelector("#warrior-name-txt");
+const dragonName = document.querySelector("#dragon-name-txt");
+// Så legger vi disse i arrayet sammen med
+// Heltene våre
+let heroesArray = [
+  {
+    id: 0,
+    name: "Henriette Healer",
+    maxHP: 400,
+    currentHP: 400,
+    damage: 100,
+    alive: true,
+    health: healerHealth,
+    bar: healerName,
+  },
+  {
+    id: 1,
+    name: "Ariana archer",
+    maxHP: 500,
+    currentHP: 500,
+    damage: 400,
+    alive: true,
+    health: archerHealth,
+    bar: archerName,
+  },
+  {
+    id: 2,
+    name: "Wyona Warrior",
+    maxHP: 600,
+    currentHP: 600,
+    damage: 400,
+    alive: true,
+    health: warriorHealth,
+    bar: warriorName,
+  },
+];
+// Dragen er et objekt
+let dragonObject = {
+  name: "Daar Dragon",
+  maxHP: 2000,
+  currentHP: 2000,
+  damage: 500,
+  alive: true,
+  health: dragonHealth,
+  bar: dragonName,
+};
+// Definerer elementene som skal trykkes på
+let heroCont = document.querySelectorAll(".img-container");
+const Henriette = document.querySelector(".healer");
+const Ariana = document.querySelector(".archer");
+const Wyona = document.querySelector(".warrior");
+
+// Legger navnene opp i baren
+heroesArray.forEach((hero) => {
+  hero.bar.innerHTML = hero.name;
+});
+// Vi må ha eventlistener på heltene
+// For hvert element i img-container lages en eventListener
+heroCont.forEach(function (ourHeroes) {
+  ourHeroes.addEventListener("click", handleClick);
+});
+// Så må vi håndtere klikkene
+function handleClick(event) {
+  // Er ute etter det andre class-name for heltene våre.
+  // 0 = img-container og 1 = den unike vi er ute etter.
+  let clickedHero = event.currentTarget.classList[1];
+  if (clickedHero == "dragon-container") {
+    console.log("Skjer ikke noe når man trykker på dragen!");
+  } else {
+    // Finner frem indexen til helten
+    // 0 for Henriette, 1 for Ariana og 2 for Wyona
+    let heroID = heroesArray.findIndex(
+      (obj) =>
+        obj.name ==
+        heroesArray.filter((hero) =>
+          hero.name.toLocaleLowerCase().includes(clickedHero)
+        )[0].name
+    );
+    heroAttacsDragon(heroID);
+  }
+}
+function heroAttacsDragon(heroID) {
+  // Oppdaterer dragens helsebar etter angrepet
+  dragonObject.currentHP -= heroesArray[heroID].damage;
+  dragonObject.health.innerHTML = `${dragonObject.currentHP} / ${dragonObject.maxHP}`;
+  // Skriver en beskjed på skjermen om hva som har funnet sted
+  alert(
+    `${heroesArray[heroID].name} angrep ${dragonObject.name} og påførte den ${heroesArray[heroID].damage} skade!`
+  );
+  if (dragonObject.currentHP > 0) {
+    console.log("Dragen lever fortsatt og angriper");
+    dragonAttacsHero();
+  } else {
+    dragonDies();
+  }
+}
+function dragonAttacsHero() {
+  // Lager en array med alle helter som er i live
+  const livingHeroesArray = heroesArray.filter((hero) => hero.alive == true);
+  // Finner en tilfeldig helt fra dette arrayet å angripe
+  let chooseAHero = Math.floor(Math.random() * livingHeroesArray.length);
+  // Finner indexen i heroesArray v.h.a. id
+  let heroUnikeID = heroesArray.findIndex(
+    (hero) => hero.id == livingHeroesArray[chooseAHero].id
+  );
+  // Utfører angrepet
+  heroesArray[heroUnikeID].currentHP -= dragonObject.damage;
+  heroesArray[
+    heroUnikeID
+  ].health.innerHTML = `${heroesArray[heroUnikeID].currentHP} / ${heroesArray[heroUnikeID].maxHP}`;
+  // Skriver ut dragens handlinger
+  alert(
+    `${dragonObject.name} angriper ${heroesArray[heroUnikeID].name} og påfører ${dragonObject.damage} skade!`
+  );
+}
