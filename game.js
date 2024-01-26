@@ -8,14 +8,14 @@ const healerName = document.querySelector("#healer-name-txt");
 const archerName = document.querySelector("#archer-name-txt");
 const warriorName = document.querySelector("#warrior-name-txt");
 const dragonName = document.querySelector("#dragon-name-txt");
-// Definerer elementene som skal trykkes på
+// Definerer elementene som skal brukes
 let heroCont = document.querySelectorAll(".img-container");
-const Henriette = document.querySelector(".healer");
-const Ariana = document.querySelector(".archer");
-const Wyona = document.querySelector(".warrior");
-const Dragon = document.querySelector(".dragon-container");
+const henriette = document.querySelector(".healer");
+const ariana = document.querySelector(".archer");
+const wyona = document.querySelector(".warrior");
+const dragon = document.querySelector(".dragon-container");
 // Så legger vi disse i arrayet sammen med
-// Heltene våre
+// heltene våre
 let heroesArray = [
   {
     id: 0,
@@ -26,7 +26,7 @@ let heroesArray = [
     alive: true,
     health: healerHealth,
     bar: healerName,
-    img: Henriette,
+    img: henriette,
   },
   {
     id: 1,
@@ -37,7 +37,7 @@ let heroesArray = [
     alive: true,
     health: archerHealth,
     bar: archerName,
-    img: Ariana,
+    img: ariana,
   },
   {
     id: 2,
@@ -48,7 +48,7 @@ let heroesArray = [
     alive: true,
     health: warriorHealth,
     bar: warriorName,
-    img: Wyona,
+    img: wyona,
   },
 ];
 // Dragen er et objekt
@@ -60,7 +60,7 @@ let dragonObject = {
   alive: true,
   health: dragonHealth,
   bar: dragonName,
-  img: Dragon,
+  img: dragon,
 };
 
 // Legger navnene opp i baren
@@ -80,7 +80,6 @@ function handleClick(event) {
   let clickedHero = event.currentTarget.classList[1];
   // Vi har ingen funksjon når det trykkes på dragen
   if (clickedHero == "dragon-container") {
-    console.log("Skjer ikke noe når man trykker på dragen!");
   } else {
     // Finner frem indexen til helten
     // 0 for Henriette, 1 for Ariana og 2 for Wyona
@@ -111,9 +110,9 @@ function heroAttacsDragon(heroID) {
 function dragonAttacsHero() {
   // Lager en array med alle helter som er i live
   const livingHeroesArray = heroesArray.filter((hero) => hero.alive == true);
-  // Finner en tilfeldig helt fra dette arrayet å angripe
+  // Finner en tilfeldig helt å angripe, fra lengden av dette arrayet
   let chooseAHero = Math.floor(Math.random() * livingHeroesArray.length);
-  // Finner indexen i heroesArray v.h.a. id
+  // Finner indexen i heroesArray v.h.a. id-en i det nye arrayet
   let heroUnikeID = heroesArray.findIndex(
     (hero) => hero.id == livingHeroesArray[chooseAHero].id
   );
@@ -122,13 +121,12 @@ function dragonAttacsHero() {
   heroesArray[
     heroUnikeID
   ].health.innerHTML = `${heroesArray[heroUnikeID].currentHP} / ${heroesArray[heroUnikeID].maxHP}`;
-  // Skriver ut dragens handlinger
+  // Skriver ut dragens handlinger i oppdateringen
   alert(
     `${dragonObject.name} angriper ${heroesArray[heroUnikeID].name} og påfører ${dragonObject.damage} skade!`
   );
   // Sjekker om helten fortsatt er i live
   if (heroesArray[heroUnikeID].currentHP > 0) {
-    console.log("Vår helt er fortsatt i live!");
   } else {
     aHeroDies(heroUnikeID);
   }
@@ -139,23 +137,24 @@ function aHeroDies(deadHero) {
   // Endrer alive til false og fjerner bildet
   heroesArray[deadHero].alive = false;
   heroesArray[deadHero].img.innerHTML = "";
-  console.log("En helt er død!");
   // Vi sjekker hvem helter som er i live
   let livingHeroes = heroesArray.filter((hero) => hero.alive == true);
-  console.log(livingHeroes.length);
   if (livingHeroes.length == 0) {
+    // Hvis ingen helter lever er spillet slutt!
     gameOver();
   }
 }
-function dragonDies(heroID) {
-  console.log("Mottatt id: " + heroID);
-  alert(
-    `Gratulerer! Du vant! ${dragonObject.name} har falt mot ${heroesArray[heroID].name} som hadde det avgjørende slaget!`
-  );
+function dragonDies(dragonKiller) {
+  // Fjerner bildet av dragen
   dragonObject.img.innerHTML = "";
+  // Slår av eventListener for heltene
   heroCont.forEach(function (ourHeroes) {
     ourHeroes.removeEventListener("click", handleClick);
   });
+  // Skriver ut seiersmeldingen
+  alert(
+    `Gratulerer! Du vant! ${dragonObject.name} har falt mot ${heroesArray[dragonKiller].name} som hadde det avgjørende slaget!`
+  );
 }
 function gameOver() {
   alert(`Alle heltene er døde! ${dragonObject.name} vant og DU TAPTE!!!`);
