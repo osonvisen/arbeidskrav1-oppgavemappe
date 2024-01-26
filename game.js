@@ -13,6 +13,7 @@ let heroCont = document.querySelectorAll(".img-container");
 const Henriette = document.querySelector(".healer");
 const Ariana = document.querySelector(".archer");
 const Wyona = document.querySelector(".warrior");
+const Dragon = document.querySelector(".dragon-container");
 // Så legger vi disse i arrayet sammen med
 // Heltene våre
 let heroesArray = [
@@ -55,16 +56,18 @@ let dragonObject = {
   name: "Daar Dragon",
   maxHP: 2000,
   currentHP: 2000,
-  damage: 500,
+  damage: 200,
   alive: true,
   health: dragonHealth,
   bar: dragonName,
+  img: Dragon,
 };
 
 // Legger navnene opp i baren
 heroesArray.forEach((hero) => {
   hero.bar.innerHTML = hero.name;
 });
+dragonObject.bar.innerHTML = dragonObject.name;
 // Vi må ha eventlistener på heltene
 // For hvert element i img-container lages en eventListener
 heroCont.forEach(function (ourHeroes) {
@@ -75,6 +78,7 @@ function handleClick(event) {
   // Er ute etter det andre class-name for heltene våre.
   // 0 = img-container og 1 = den unike vi er ute etter.
   let clickedHero = event.currentTarget.classList[1];
+  // Vi har ingen funksjon når det trykkes på dragen
   if (clickedHero == "dragon-container") {
     console.log("Skjer ikke noe når man trykker på dragen!");
   } else {
@@ -101,7 +105,7 @@ function heroAttacsDragon(heroID) {
   if (dragonObject.currentHP > 0) {
     dragonAttacsHero();
   } else {
-    dragonDies();
+    dragonDies(heroID);
   }
 }
 function dragonAttacsHero() {
@@ -143,4 +147,16 @@ function aHeroDies(deadHero) {
     gameOver();
   }
 }
-function gameOver() {}
+function dragonDies(heroID) {
+  console.log("Mottatt id: " + heroID);
+  alert(
+    `Gratulerer! Du vant! ${dragonObject.name} har falt mot ${heroesArray[heroID].name} som hadde det avgjørende slaget!`
+  );
+  dragonObject.img.innerHTML = "";
+  heroCont.forEach(function (ourHeroes) {
+    ourHeroes.removeEventListener("click", handleClick);
+  });
+}
+function gameOver() {
+  alert(`Alle heltene er døde! ${dragonObject.name} vant og DU TAPTE!!!`);
+}
