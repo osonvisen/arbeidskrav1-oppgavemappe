@@ -1,5 +1,8 @@
-// Jeg velger å ha en egen js-fil. Føler jeg har bedre oversikt da, også kan jeg jobbe med kodene side ved side.
-// Først definerer vi alle enhetene vi skal jobbe med:
+// Jeg velger å ha en egen js-fil. Føler jeg har bedre oversikt da,
+// også kan jeg jobbe med kodene side ved side.
+// Først definerer vi alle enhetene vi skal jobbe med. Jeg liker å
+// ha de globale, også skal jeg jo bruke noen av de i arrayet:
+// Navn og helse
 let healerHealth = document.querySelector("#healer-health-txt");
 let archerHealth = document.querySelector("#archer-health-txt");
 let warriorHealth = document.querySelector("#warrior-health-txt");
@@ -8,7 +11,7 @@ const healerName = document.querySelector("#healer-name-txt");
 const archerName = document.querySelector("#archer-name-txt");
 const warriorName = document.querySelector("#warrior-name-txt");
 const dragonName = document.querySelector("#dragon-name-txt");
-// Definerer elementene som skal brukes
+// Bildecontainere
 let heroCont = document.querySelectorAll(".img-container");
 const henriette = document.querySelector(".healer");
 const ariana = document.querySelector(".archer");
@@ -68,21 +71,32 @@ heroesArray.forEach((hero) => {
   hero.bar.innerHTML = hero.name;
 });
 dragonObject.bar.innerHTML = dragonObject.name;
-// Vi må ha eventlistener på heltene
-// For hvert element i img-container lages en eventListener
+// Bruker forEach for å lage eventListener til
+// hvert element i img-container som kan trykkes på.
 heroCont.forEach(function (ourHeroes) {
   ourHeroes.addEventListener("click", handleClick);
 });
 // Så må vi håndtere klikkene
 function handleClick(event) {
-  // Er ute etter det andre class-name for heltene våre.
-  // 0 = img-container og 1 = den unike vi er ute etter.
+  // Er ute etter det 2. (andre) class-name for heltene våre i
+  // klassen f.eks. "img-container healer".
+  // 0 = img-container og 1 = healer (eller archer eller warrior).
+  // Her har jeg brukt currentTarget.classlist som vi ikke har lært.
+  // Ved å google litt rundt fant jeg ut en elegant måte å
+  // løse dette klikket på heltene våre på.
   let clickedHero = event.currentTarget.classList[1];
-  // Vi har ingen funksjon når det trykkes på dragen
+  // Vi har ingen funksjon når det trykkes på dragen,
+  // men vi fanger opp klikket og gjør ingenting med det.
   if (clickedHero == "dragon-container") {
   } else {
     // Finner frem indexen til helten
     // 0 for Henriette, 1 for Ariana og 2 for Wyona
+    // Her har jeg brukt findIndex, som vi ikke har lært om,
+    // for å finne plasseringen i arrayet. Det var utrolig lærerikt
+    // å lese seg opp på, og sparte meg for masse knoting...
+    // eller koding! :) Jeg gjør også alle disse operasjonene i 1:
+    // Jeg kunne delt opp koden og gjort det samme i flere
+    // linjer, men valgte å gjøre alt i èn operasjon.
     let heroID = heroesArray.findIndex(
       (obj) =>
         obj.name ==
@@ -94,6 +108,7 @@ function handleClick(event) {
   }
 }
 function heroAttacsDragon(heroID) {
+  // Helten angriper og påfører dragen en viss mengde skade.
   // Oppdaterer dragens helsebar etter angrepet
   dragonObject.currentHP -= heroesArray[heroID].damage;
   dragonObject.health.innerHTML = `${dragonObject.currentHP} / ${dragonObject.maxHP}`;
@@ -101,6 +116,7 @@ function heroAttacsDragon(heroID) {
   alert(
     `${heroesArray[heroID].name} angrep ${dragonObject.name} og påførte den ${heroesArray[heroID].damage} skade!`
   );
+  // Sjekker at dragen fortsatt er i live, før vi kaller på neste kodesnutt:
   if (dragonObject.currentHP > 0) {
     dragonAttacsHero();
   } else {
@@ -108,15 +124,17 @@ function heroAttacsDragon(heroID) {
   }
 }
 function dragonAttacsHero() {
-  // Lager en array med alle helter som er i live
+  // Lager en ny array med alle helter som er i live. Da får jeg riktig lengde på
+  // arrayet om en (eller to) helter skulle dø. Og lengden på arrayet styrer hvor
+  // mange helter dragen kan velge tilfeldig mellom å angripe.
   const livingHeroesArray = heroesArray.filter((hero) => hero.alive == true);
-  // Finner en tilfeldig helt å angripe, fra lengden av dette arrayet
+  // Finner så en tilfeldig helt å angripe, vha Math.random og lengden av dette arrayet
   let chooseAHero = Math.floor(Math.random() * livingHeroesArray.length);
   // Finner indexen i heroesArray v.h.a. id-en i det nye arrayet
   let heroUnikeID = heroesArray.findIndex(
     (hero) => hero.id == livingHeroesArray[chooseAHero].id
   );
-  // Utfører angrepet
+  // Utfører angrepet, og oppdaterer skaden på den angrepne helten.
   heroesArray[heroUnikeID].currentHP -= dragonObject.damage;
   heroesArray[
     heroUnikeID
@@ -136,7 +154,9 @@ function aHeroDies(deadHero) {
   alert(`${heroesArray[deadHero].name} har falt mot ${dragonObject.name}`);
   // Endrer alive til false og fjerner bildet
   heroesArray[deadHero].alive = false;
-  heroesArray[deadHero].img.innerHTML = "";
+  heroCont[deadHero].remove();
+  // Her kunne jeg lett ha brukt
+  // heroesArray[deadHero].img.innerHTML = "";
   // Vi sjekker hvem helter som er i live
   let livingHeroes = heroesArray.filter((hero) => hero.alive == true);
   if (livingHeroes.length == 0) {
@@ -145,8 +165,9 @@ function aHeroDies(deadHero) {
   }
 }
 function dragonDies(dragonKiller) {
-  // Fjerner bildet av dragen
-  dragonObject.img.innerHTML = "";
+  // Fjerner bildet av dragen, som er siste bilde i heroCont.
+  // Hardkoder da inn det fjerdebildet i index 3;
+  heroCont[3].remove();
   // Slår av eventListener for heltene
   heroCont.forEach(function (ourHeroes) {
     ourHeroes.removeEventListener("click", handleClick);
